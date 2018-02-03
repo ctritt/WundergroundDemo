@@ -7,11 +7,8 @@
 //
 
 import UIKit
-import WebKit
 
 class ViewController: UIViewController {
-
-    @IBOutlet weak var webView: WKWebView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -19,10 +16,6 @@ class ViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        let url = URL(string: "https://icons.wxug.com/i/c/v4/clear.svg")!
-        let request = URLRequest(url: url)
-        webView.load(request)
     }
 
 
