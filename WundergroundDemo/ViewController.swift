@@ -10,6 +10,12 @@ import UIKit
 
 class ViewController: UIViewController {
     
+    @IBOutlet weak var dayOfTheWeekLabel: UILabel!
+    @IBOutlet weak var dailyForecastImage: UIImageView!
+    @IBOutlet weak var dailyForecastHighTempLabel: UILabel!
+    @IBOutlet weak var dailyForecastLowTempLabel: UILabel!
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
