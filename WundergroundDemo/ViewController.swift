@@ -15,6 +15,8 @@ class ViewController: UIViewController {
     
     @IBOutlet weak var currentConditionImage: UIImageView!
     @IBOutlet weak var currentTempLabel: UILabel!
+    @IBOutlet weak var lastUpdatedLabel: UILabel!
+    
     
     let apiKey = "a8865fd6351f5b91"
     let baseURLString = "https://api.wunderground.com"
@@ -26,7 +28,7 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
     }
-
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         refreshWeatherConditions(self)
@@ -51,11 +53,15 @@ class ViewController: UIViewController {
             guard let jsonRootDict = json as? [String: Any] else { return }
             guard let currentObservation = jsonRootDict["current_observation"] as? [String: Any] else { return }
             
-            if let currentTemp = currentObservation["temp_f"] as? Double, let icon =  currentObservation["icon"] as? String {
+            if let currentTemp = currentObservation["temp_f"] as? Double,
+                let icon =  currentObservation["icon"] as? String,
+                let lastUpdated = currentObservation["observation_time"] as? String
+            {
                 
                 DispatchQueue.main.async { [weak self] in
                     self?.currentTempLabel.text = "\(Int(currentTemp))F"
                     self?.currentConditionImage.image = UIImage(named: icon)
+                    self?.lastUpdatedLabel.text = lastUpdated
                 }
             }
         }
