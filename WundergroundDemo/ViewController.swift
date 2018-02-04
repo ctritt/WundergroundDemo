@@ -10,11 +10,18 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    @IBOutlet weak var dayOfTheWeekLabel: UILabel!
-    @IBOutlet weak var dailyForecastImage: UIImageView!
-    @IBOutlet weak var dailyForecastHighTempLabel: UILabel!
-    @IBOutlet weak var dailyForecastLowTempLabel: UILabel!
     
+    @IBOutlet weak var tableView: UITableView!
+    
+    @IBOutlet weak var currentConditionImage: UIImageView!
+    @IBOutlet weak var currentTempLabel: UILabel!
+    
+    let apiKey = "a8865fd6351f5b91"
+    let baseURLString = "https://api.wunderground.com"
+    let city = "Cincinnati"
+    let state = "OH"
+    
+    var forecastArray = [Forecast]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,47 +29,84 @@ class ViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        getCurrentCondition(self)
+        getFourDayForecast()
     }
-
-
+    
+    @IBAction func getCurrentCondition(_ sender: Any) {
+        
+        let currentConditionURL = URL(string: "\(baseURLString)/api/\(apiKey)/conditions/q/\(state)/\(city).json")!
+        
+        let task = URLSession.shared.dataTask(with: currentConditionURL){ data, response, error in
+            
+            guard let data = data, error == nil else { return }
+            
+            let json = try? JSONSerialization.jsonObject(with: data, options: [])
+            
+            guard let jsonRootDict = json as? [String: Any] else { return }
+            guard let currentObservation = jsonRootDict["current_observation"] as? [String: Any] else { return }
+            
+            if let currentTemp = currentObservation["temp_f"] as? Double, let icon =  currentObservation["icon"] as? String {
+                
+                DispatchQueue.main.async { [weak self] in
+                    self?.currentTempLabel.text = "\(currentTemp)"
+                    self?.currentConditionImage.image = UIImage(named: icon)
+                }
+            }
+        }
+        task.resume()
+    }
+    
+    func getFourDayForecast() {
+        
+        let forecastURL = URL(string: "https://api.wunderground.com/api/a8865fd6351f5b91/forecast/q/OH/Cincinnati.json")!
+        
+        let task = URLSession.shared.dataTask(with: forecastURL){ [weak self] data, response, error in
+            guard let data = data, error == nil else { return }
+            
+            let json = try? JSONSerialization.jsonObject(with: data, options: [])
+            
+            guard let jsonRootDict = json as? [String: Any] else { return }
+            guard let forecastDict = jsonRootDict["forecast"] as? [String: Any] else { return }
+            guard let simpleForecast = forecastDict["simpleforecast"] as? [String: Any] else { return }
+            guard let forecastDayArray = simpleForecast["forecastday"] as? [[String: Any]] else { return }
+            
+            for f in forecastDayArray {
+                guard let date = f["date"] as? [String: Any],
+                    let weekday = date["weekday"] as? String,
+                    let icon = f["icon"] as? String,
+                    let highDict = f["high"] as? [String: String],
+                    let fahrenheitHigh = highDict["fahrenheit"],
+                    let lowDict = f["low"] as? [String: String],
+                    let fahrenheitLow = lowDict["fahrenheit"]
+                    else { return }
+                self?.forecastArray.append(Forecast(forecastDay: weekday, icon: icon, high: fahrenheitHigh, low: fahrenheitLow))
+            }
+            
+            DispatchQueue.main.async { [weak self] in
+                self?.tableView.reloadData()
+            }
+        }
+        task.resume()
+    }
+    
 }
 
-//let url = URL(string: "https://google.com")!
-//let task = URLSession.shared.dataTask(with: url){
-//    data, response, error in
-//
-//    guard let data = data, error == nil
-//        else { return }
-//
-//    let responseString = String(data: data, encoding: String.Encoding.utf8)
-//    print(responseString ?? "--")
-//}
-//
-//task.resume()
-
-//let apiKey = "a8865fd6351f5b91"
-//let baseURL = "http://api.wunderground.com"
-//
-//let city = "Cincinnati"
-//let state = "OH"
-//
-//let forecastPath = "/api/\(apiKey)/forecast/q/\(state)/\(city).json"
-//
-//let forecastURL = URL(string: "\(baseURL)\(forecastPath)")!
-//
-//var urlRequest = URLRequest(url: forecastURL)
-//urlRequest.httpMethod = "GET"
-//urlRequest.setValue("application/json", forHTTPHeaderField: "Accept")
-//
-//let forecastTask = URLSession.shared.dataTask(with: urlRequest){ data, response, error in
-//    guard let data = data, error == nil else { return }
-//
-//    let json = String(data: data, encoding: String.Encoding.utf8)
-//    print(error)
-//    print(json)
-//}
-//forecastTask.resume()
-
-//https://www.wunderground.com/weather/api/d/docs?d=resources/phrase-glossary&MR=1&_ga=2.38960426.881120169.1517575377-1431911605.1517575377
-//https://icons.wxug.com/i/c/v4/clear.svg
-//https://github.com/manifestinteractive/weather-underground-icons
+extension ViewController : UITableViewDataSource {
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+        return forecastArray.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ForecastCell") as! ForecastTableViewCell
+        
+        let forecastDay = forecastArray[indexPath.row]
+        cell.forecastDayOfWeekLabel.text = forecastDay.forecastDay
+        cell.forecastConditionImage.image = UIImage(named: forecastDay.icon)
+        cell.forecastHighTempLabel.text = forecastDay.high
+        cell.forecastLowTempLabel.text = forecastDay.low
+        return cell
+    }
+}

@@ -13,6 +13,7 @@
 		878CBA752024F13B00308903 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 878CBA742024F13B00308903 /* Assets.xcassets */; };
 		878CBA782024F13B00308903 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 878CBA762024F13B00308903 /* LaunchScreen.storyboard */; };
 		9AFADFF52026017500B1D7C7 /* ForecastTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AFADFF42026017500B1D7C7 /* ForecastTableViewCell.swift */; };
+		9AFADFF82026B7FF00B1D7C7 /* Forecast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AFADFF72026B7FF00B1D7C7 /* Forecast.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		878CBA772024F13B00308903 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		878CBA792024F13B00308903 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9AFADFF42026017500B1D7C7 /* ForecastTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ForecastTableViewCell.swift; sourceTree = "<group>"; };
+		9AFADFF72026B7FF00B1D7C7 /* Forecast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Forecast.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +58,7 @@
 		878CBA6C2024F13A00308903 /* WundergroundDemo */ = {
 			isa = PBXGroup;
 			children = (
+				9AFADFF62026B7D200B1D7C7 /* Models */,
 				9AFADFF32026011D00B1D7C7 /* Cells */,
 				878CBA6D2024F13A00308903 /* AppDelegate.swift */,
 				878CBA6F2024F13A00308903 /* ViewController.swift */,
@@ -73,6 +76,14 @@
 				9AFADFF42026017500B1D7C7 /* ForecastTableViewCell.swift */,
 			);
 			path = Cells;
+			sourceTree = "<group>";
+		};
+		9AFADFF62026B7D200B1D7C7 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				9AFADFF72026B7FF00B1D7C7 /* Forecast.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -147,6 +158,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9AFADFF82026B7FF00B1D7C7 /* Forecast.swift in Sources */,
 				9AFADFF52026017500B1D7C7 /* ForecastTableViewCell.swift in Sources */,
 				878CBA702024F13A00308903 /* ViewController.swift in Sources */,
 				878CBA6E2024F13A00308903 /* AppDelegate.swift in Sources */,
