@@ -29,11 +29,16 @@ class ViewController: UIViewController {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        getCurrentCondition(self)
-        getFourDayForecast()
+        refreshWeatherConditions(self)
     }
     
-    @IBAction func getCurrentCondition(_ sender: Any) {
+    @IBAction func refreshWeatherConditions(_ sender: Any) {
+        forecastArray.removeAll()
+        loadCurrentCondition()
+        loadForecast()
+    }
+    
+    func loadCurrentCondition() {
         
         let currentConditionURL = URL(string: "\(baseURLString)/api/\(apiKey)/conditions/q/\(state)/\(city).json")!
         
@@ -49,7 +54,7 @@ class ViewController: UIViewController {
             if let currentTemp = currentObservation["temp_f"] as? Double, let icon =  currentObservation["icon"] as? String {
                 
                 DispatchQueue.main.async { [weak self] in
-                    self?.currentTempLabel.text = "\(currentTemp)"
+                    self?.currentTempLabel.text = "\(Int(currentTemp))F"
                     self?.currentConditionImage.image = UIImage(named: icon)
                 }
             }
@@ -57,9 +62,8 @@ class ViewController: UIViewController {
         task.resume()
     }
     
-    func getFourDayForecast() {
-        
-        let forecastURL = URL(string: "https://api.wunderground.com/api/a8865fd6351f5b91/forecast/q/OH/Cincinnati.json")!
+    func loadForecast() {
+        let forecastURL = URL(string: "\(baseURLString)/api/\(apiKey)/forecast/q/\(state)/\(city).json")!
         
         let task = URLSession.shared.dataTask(with: forecastURL){ [weak self] data, response, error in
             guard let data = data, error == nil else { return }
@@ -89,7 +93,6 @@ class ViewController: UIViewController {
         }
         task.resume()
     }
-    
 }
 
 extension ViewController : UITableViewDataSource {
